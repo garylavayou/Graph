@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key attr.name="key" attr.type="int" for="edge" id="36" />
+  <key attr.name="LinkLabel" attr.type="string" for="edge" id="35" />
+  <key attr.name="hyperedge" attr.type="int" for="node" id="34" />
+  <key attr.name="label" attr.type="string" for="node" id="33" />
+  <key attr.name="Longitude" attr.type="double" for="node" id="32" />
+  <key attr.name="id" attr.type="int" for="node" id="31" />
+  <key attr.name="Country" attr.type="string" for="node" id="30" />
+  <key attr.name="Latitude" attr.type="double" for="node" id="29" />
+  <key attr.name="Internal" attr.type="int" for="node" id="28" />
+  <key attr.name="Testbed" attr.type="int" for="graph" id="27" />
+  <key attr.name="LastProcessed" attr.type="string" for="graph" id="26" />
+  <key attr.name="DateYear" attr.type="string" for="graph" id="25" />
+  <key attr.name="NetworkDate" attr.type="string" for="graph" id="24" />
+  <key attr.name="Transit" attr.type="int" for="graph" id="23" />
+  <key attr.name="Developed" attr.type="int" for="graph" id="22" />
+  <key attr.name="Creator" attr.type="string" for="graph" id="21" />
+  <key attr.name="Layer" attr.type="string" for="graph" id="20" />
+  <key attr.name="LastAccess" attr.type="string" for="graph" id="19" />
+  <key attr.name="DateMonth" attr.type="string" for="graph" id="18" />
+  <key attr.name="DateModifier" attr.type="string" for="graph" id="17" />
+  <key attr.name="SourceGitVersion" attr.type="string" for="graph" id="16" />
+  <key attr.name="IX" attr.type="int" for="graph" id="15" />
+  <key attr.name="Customer" attr.type="int" for="graph" id="14" />
+  <key attr.name="ToolsetVersion" attr.type="string" for="graph" id="13" />
+  <key attr.name="label" attr.type="string" for="graph" id="12" />
+  <key attr.name="Commercial" attr.type="int" for="graph" id="11" />
+  <key attr.name="Backbone" attr.type="int" for="graph" id="10" />
+  <key attr.name="DateType" attr.type="string" for="graph" id="9" />
+  <key attr.name="Type" attr.type="string" for="graph" id="8" />
+  <key attr.name="Version" attr.type="string" for="graph" id="7" />
+  <key attr.name="Source" attr.type="string" for="graph" id="6" />
+  <key attr.name="Access" attr.type="int" for="graph" id="5" />
+  <key attr.name="Provenance" attr.type="string" for="graph" id="4" />
+  <key attr.name="Network" attr.type="string" for="graph" id="3" />
+  <key attr.name="GeoExtent" attr.type="string" for="graph" id="2" />
+  <key attr.name="GeoLocation" attr.type="string" for="graph" id="1" />
+  <key attr.name="DateObtained" attr.type="string" for="graph" id="0" />
+  <graph edgedefault="undirected">
+    <data key="DateObtained">16/01/11</data>
+    <data key="GeoLocation">USA, Europe, Japan</data>
+    <data key="GeoExtent">Country+</data>
+    <data key="Network">AboveNet</data>
+    <data key="Provenance">Primary</data>
+    <data key="Access">0</data>
+    <data key="Source">http://www.above.net/maps/images/ABVT_overall.gif</data>
+    <data key="Version">1.0</data>
+    <data key="Type">COM</data>
+    <data key="DateType">Current</data>
+    <data key="Backbone">1</data>
+    <data key="Commercial">0</data>
+    <data key="label">Abvt</data>
+    <data key="ToolsetVersion">0.3.34dev-20120328</data>
+    <data key="Customer">1</data>
+    <data key="IX">0</data>
+    <data key="SourceGitVersion">e278b1b</data>
+    <data key="DateModifier">=</data>
+    <data key="DateMonth">01</data>
+    <data key="LastAccess">16/01/11</data>
+    <data key="Layer">IP</data>
+    <data key="Creator">Topology Zoo Toolset</data>
+    <data key="Developed">1</data>
+    <data key="Transit">1</data>
+    <data key="NetworkDate">2011_01</data>
+    <data key="DateYear">2011</data>
+    <data key="LastProcessed">2011_09_01</data>
+    <data key="Testbed">0</data>
+    <node id="0">
+      <data key="Internal">1</data>
+      <data key="Latitude">38.89511</data>
+      <data key="Country">United States</data>
+      <data key="id">0</data>
+      <data key="Longitude">-77.03637</data>
+      <data key="label">Washington CDC</data>
+    </node>
+    <node id="1">
+      <data key="Internal">1</data>
+      <data key="Latitude">40.71427</data>
+      <data key="Country">United States</data>
+      <data key="id">1</data>
+      <data key="Longitude">-74.00597</data>
+      <data key="label">New York</data>
+    </node>
+    <node id="2">
+      <data key="Internal">1</data>
+      <data key="Latitude">33.749</data>
+      <data key="Country">United States</data>
+      <data key="id">2</data>
+      <data key="Longitude">-84.38798</data>
+      <data key="label">Atlanta</data>
+    </node>
+    <node id="3">
+      <data key="Internal">1</data>
+      <data key="Latitude">25.77427</data>
+      <data key="Country">United States</data>
+      <data key="id">3</data>
+      <data key="Longitude">-80.19366</data>
+      <data key="label">Miami</data>
+    </node>
+    <node id="4">
+      <data key="Internal">1</data>
+      <data key="Latitude">42.35843</data>
+      <data key="Country">United States</data>
+      <data key="id">4</data>
+      <data key="Longitude">-71.05977</data>
+      <data key="label">Boston</data>
+    </node>
+    <node id="5">
+      <data key="Internal">1</data>
+      <data key="Latitude">51.50853</data>
+      <data key="Country">United Kingdom</data>
+      <data key="id">5</data>
+      <data key="Longitude">-0.12574</data>
+      <data key="label">London</data>
+    </node>
+    <node id="6">
+      <data key="Internal">1</data>
+      <data key="Latitude">39.95234</data>
+      <data key="Country">United States</data>
+      <data key="id">6</data>
+      <data key="Longitude">-75.16379</data>
+      <data key="label">Philadelphia</data>
+    </node>
+    <node id="7">
+      <data key="Internal">1</data>
+      <data key="Latitude">39.29038</data>
+      <data key="Country">United States</data>
+      <data key="id">7</data>
+      <data key="Longitude">-76.61219</data>
+      <data key="label">Baltimore</data>
+    </node>
+    <node id="8">
+      <data key="Internal">1</data>
+      <data key="Latitude">52.37403</data>
+      <data key="Country">Netherlands</data>
+      <data key="id">8</data>
+      <data key="Longitude">4.88969</data>
+      <data key="label">Amsterdam</data>
+    </node>
+    <node id="9">
+      <data key="Internal">1</data>
+      <data key="Latitude">50.11667</data>
+      <data key="Country">Germany</data>
+      <data key="id">9</data>
+      <data key="Longitude">8.68333</data>
+      <data key="label">Frankfurt</data>
+    </node>
+    <node id="10">
+      <data key="Internal">1</data>
+      <data key="Latitude">29.76328</data>
+      <data key="Country">United States</data>
+      <data key="id">10</data>
+      <data key="Longitude">-95.36327</data>
+      <data key="label">Houston</data>
+    </node>
+    <node id="11">
+      <data key="hyperedge">1</data>
+      <data key="Internal">1</data>
+      <data key="id">11</data>
+      <data key="label">None</data>
+    </node>
+    <node id="12">
+      <data key="Internal">1</data>
+      <data key="Latitude">48.85341</data>
+      <data key="Country">France</data>
+      <data key="id">12</data>
+      <data key="Longitude">2.3488</data>
+      <data key="label">Paris</data>
+    </node>
+    <node id="13">
+      <data key="Internal">1</data>
+      <data key="Latitude">32.78306</data>
+      <data key="Country">United States</data>
+      <data key="id">13</data>
+      <data key="Longitude">-96.80667</data>
+      <data key="label">Dallas</data>
+    </node>
+    <node id="14">
+      <data key="Internal">1</data>
+      <data key="Latitude">30.26715</data>
+      <data key="Country">United States</data>
+      <data key="id">14</data>
+      <data key="Longitude">-97.74306</data>
+      <data key="label">Austin</data>
+    </node>
+    <node id="15">
+      <data key="Internal">1</data>
+      <data key="Latitude">47.60621</data>
+      <data key="Country">United States</data>
+      <data key="id">15</data>
+      <data key="Longitude">-122.33207</data>
+      <data key="label">Seattle</data>
+    </node>
+    <node id="16">
+      <data key="Internal">1</data>
+      <data key="Latitude">45.52345</data>
+      <data key="Country">United States</data>
+      <data key="id">16</data>
+      <data key="Longitude">-122.67621</data>
+      <data key="label">Portland</data>
+    </node>
+    <node id="17">
+      <data key="Internal">1</data>
+      <data key="Latitude">35.61488</data>
+      <data key="Country">Japan</data>
+      <data key="id">17</data>
+      <data key="Longitude">139.5813</data>
+      <data key="label">Tokyo</data>
+    </node>
+    <node id="18">
+      <data key="Internal">1</data>
+      <data key="Latitude">37.77493</data>
+      <data key="Country">United States</data>
+      <data key="id">18</data>
+      <data key="Longitude">-122.41942</data>
+      <data key="label">San Francisco</data>
+    </node>
+    <node id="19">
+      <data key="Internal">1</data>
+      <data key="Latitude">34.05223</data>
+      <data key="Country">United States</data>
+      <data key="id">19</data>
+      <data key="Longitude">-118.24368</data>
+      <data key="label">Los Angeles</data>
+    </node>
+    <node id="20">
+      <data key="Internal">1</data>
+      <data key="Latitude">33.44838</data>
+      <data key="Country">United States</data>
+      <data key="id">20</data>
+      <data key="Longitude">-112.07404</data>
+      <data key="label">Phoenix</data>
+    </node>
+    <node id="21">
+      <data key="Internal">1</data>
+      <data key="Latitude">39.73915</data>
+      <data key="Country">United States</data>
+      <data key="id">21</data>
+      <data key="Longitude">-104.9847</data>
+      <data key="label">Denver</data>
+    </node>
+    <node id="22">
+      <data key="Internal">1</data>
+      <data key="Latitude">41.85003</data>
+      <data key="Country">United States</data>
+      <data key="id">22</data>
+      <data key="Longitude">-87.65005</data>
+      <data key="label">Chicago</data>
+    </node>
+    <edge source="0" target="2">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="0" target="4">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="0" target="5">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="0" target="7">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="1" target="8">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="1" target="22">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="1" target="4">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="1" target="5">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="1" target="6">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="2" target="10">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="2" target="3">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="3" target="10">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="5" target="12">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="5" target="8">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="6" target="7">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="8" target="9">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="9" target="12">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="10" target="20">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="10" target="13">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="10" target="14">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="11" target="13">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="11" target="22">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="11" target="21">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="13" target="14">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="15" target="16">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="15" target="22">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="16" target="18">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="17" target="18">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="18" target="19">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="18" target="21">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+    <edge source="19" target="20">
+      <data key="LinkLabel">Leased Wavelength/Managed Service</data>
+      <data key="key">0</data>
+    </edge>
+  </graph>
+</graphml>

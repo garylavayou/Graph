@@ -1,0 +1,203 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Path</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-10-31"><meta name="DC.source" content="Path.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Path</h1><!--introduction--><p>A path has a node list and associated with parameters, including, bandwidth, latency, identifier, etc.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Bandwidth, Latency and Identifier</a></li><li><a href="#5">Constructor</a></li><li><a href="#6">Property</a></li><li><a href="#7">Methods</a></li></ul></div><h2 id="3">Bandwidth, Latency and Identifier</h2><p>Bandwidth, latency and identifier are not the intrinsic properties of a path. So these properties is assigned when the path is build from a graph and can be altered thereafter.</p><h2 id="5">Constructor</h2><p>Build path with a list of node:</p><pre>    Path(node_list, bandwidth, latency)</pre><p>Build path with existing Path instance:</p><pre>    Path(path)</pre><h2 id="6">Property</h2><div><ul><li><b>Length</b> <tt>get</tt></li><li><b>Source</b> <tt>get</tt></li><li><b>Destination</b> <tt>get</tt></li><li><b>TailLink</b> <tt>get</tt></li><li><b>HeadLink</b> <tt>get</tt></li><li><b>node_list</b> <tt>set</tt></li></ul></div><h2 id="7">Methods</h2><div><ul><li><b>Node</b></li></ul></div><pre>    n = Node(path, i)</pre><div><ul><li><b>Link</b></li></ul></div><pre>    l = Link(path, i)</pre><div><ul><li><b>EqualPath</b></li></ul></div><pre>    b = EqualPath(path1, path2)</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Path
+% A path has a node list and associated with parameters, including, bandwidth, latency,
+% identifier, etc.
+%%
+classdef Path < handle
+    
+    properties
+        node_list;
+        %% Bandwidth, Latency and Identifier
+        % Bandwidth, latency and identifier are not the intrinsic properties of a path. So
+        % these properties is assigned when the path is build from a graph and can be
+        % altered thereafter.
+        bandwidth;
+        latency;
+        id;
+        
+        Length;
+        Source;
+        Destination;
+        TailLink;
+        HeadLink;
+    end
+    
+    methods
+
+        function this = Path(node_list, bandwidth, latency)
+            if nargin >= 1
+                if isa(node_list, 'Path')   % node_list is an instance of Path class.
+                    this.copy(node_list);
+                elseif isnumeric(node_list)
+                    this.node_list = node_list;
+                else
+                    error('error: invalid input argument (node_list).');
+                end
+            end
+            if nargin >=2 && ~isempty(bandwidth)
+                this.bandwidth = bandwidth;
+            end
+            if nargin >= 3 && ~isempty(latency)
+                this.latency = latency;
+            end
+        end
+        
+
+        function l = get.Length(this)
+            l = length(this.node_list);
+        end
+        function h = get.Source(this)
+            h = this.node_list(1);
+        end
+        function t = get.Destination(this)
+            t = this.node_list(end);
+        end
+        function e = get.TailLink(this)
+            e = [this.node_list(end-1) this.node_list(end)];
+        end
+        function e = get.HeadLink(this)
+            e = [this.node_list(1) this.node_list(2)];
+        end
+        
+        function set.node_list(this, node_list)
+            if isrow(node_list)
+                this.node_list = node_list;
+            else
+                this.node_list = node_list';
+            end
+        end
+        
+        
+        function n = Node(this, i)
+            n = this.node_list(i);
+        end
+        function l = Link(this, i)
+            l = [this.node_list(i) this.node_list(i+1)];
+        end
+        function b = EqualPath(this, path)
+            if isequal(path.node_list, this.node_list)
+                b = true;
+            else
+                b = false;
+            end
+        end
+        
+        function MultiplyBandwidth(this, factor)
+            this.bandwidth = this.bandwidth*factor;
+        end
+        
+        
+    end
+    
+    methods (Access = private)
+        function copy(this, path)
+            this.node_list = path.node_list;
+            this.bandwidth = path.bandwidth;
+            this.latency = path.latency;
+            this.id = path.id;
+        end
+    end
+end
+
+%% Constructor
+% Build path with a list of node:
+%
+%      Path(node_list, bandwidth, latency)
+%
+% Build path with existing Path instance:
+%
+%      Path(path)
+%
+
+%% Property
+% * *Length* |get|
+% * *Source* |get|
+% * *Destination* |get|
+% * *TailLink* |get|
+% * *HeadLink* |get|
+% * *node_list* |set|
+
+%% Methods
+% * *Node*
+%
+%      n = Node(path, i)
+%
+% * *Link*
+%
+%      l = Link(path, i)
+%
+% * *EqualPath*
+%
+%      b = EqualPath(path1, path2)
+
+##### SOURCE END #####
+--></body></html>

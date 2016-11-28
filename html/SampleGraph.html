@@ -1,0 +1,256 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Sample Graph</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-06-01"><meta name="DC.source" content="SampleGraph.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Sample Graph</h1><!--introduction--><pre class="language-matlab">SampleGraph &lt; Graph
+</pre><p>Smaple graphes for testing algorithm</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Method: Load backbone topology</a></li><li><a href="#4">TODO data center topology</a></li><li><a href="#5">TODO artificial core network topology</a></li></ul></div><h2>Method: Load backbone topology<a name="2"></a></h2><pre class="language-matlab">GA = LoadBackboneAdjacent(backbone_name)
+</pre><h2>TODO data center topology<a name="4"></a></h2><h2>TODO artificial core network topology<a name="5"></a></h2><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Sample Graph
+%   SampleGraph < Graph
+%
+% Smaple graphes for testing algorithm
+%%
+classdef SampleGraph < Graph    
+    properties
+    end
+    methods
+        function this = SampleGraph(name)
+            if nargin == 0
+                return;
+            end
+            % adjacent matrix with capacity
+            if strcmpi(name,'1')==true
+                this.Adjacent = [   % source:
+                    0  7  9  0 0 14;
+                    7  0 10 15 0  0;
+                    9 10  0 11 0  2;
+                    0 15 11  0 6  0;
+                    0  0  0  6 0  9;
+                    14 0  2  0 9  0];
+            elseif strcmpi(name,'2')==true
+                this.Adjacent = [   % source: traffic engineering in software defined network
+                    0 1 1 1 0 0 0 0 0 0 0 0 0 0 0;    %1
+                    1 0 1 0 1 0 0 0 0 0 1 0 0 0 0;    %2
+                    1 1 0 1 0 1 1 0 0 0 0 0 0 0 0;    %3
+                    1 0 1 0 0 0 0 1 1 0 0 0 0 0 0;    %4
+                    0 1 0 0 0 0 0 0 0 0 0 1 0 0 0;    %5
+                    0 0 1 0 0 0 1 0 0 1 1 0 0 0 0;    %6
+                    0 0 1 0 0 1 0 0 1 1 0 0 0 0 0;    %7
+                    0 0 0 1 0 0 0 0 1 0 0 0 0 0 0;    %8
+                    0 0 0 1 0 0 1 1 0 1 0 0 0 0 1;    %9
+                    0 0 0 0 0 1 1 0 1 0 1 0 1 1 0;    %10
+                    0 1 0 0 0 1 0 0 0 1 0 1 1 0 0;    %11
+                    0 0 0 0 1 0 0 0 0 0 1 0 1 0 0;    %12
+                    0 0 0 0 0 0 0 0 0 1 1 1 0 1 0;    %13
+                    0 0 0 0 0 0 0 0 0 1 0 0 1 0 1;    %14
+                    0 0 0 0 0 0 0 0 1 0 0 0 0 1 0];   %15
+            else
+                this.Adjacent = SampleGraph.LoadBackboneAdjacent(name);
+            end
+            this.Size = size(this.Adjacent,1);
+            [this.Head, this.Tail, this.Capacity] = find(this.Adjacent);
+            this.Inverse = zeros(this.Size);
+            for e=1:length(this.Capacity)
+                % link e from head(e) to tail(e)
+                this.Inverse(this.Head(e),this.Tail(e))=e;
+            end            
+        end
+    end
+    methods (Static)
+        %% Method: Load backbone topology
+        %   GA = LoadBackboneAdjacent(backbone_name)
+        function GA = LoadBackboneAdjacent(backbone_name)
+            % SmallNet
+            if strcmpi('smallnet', backbone_name)==true
+                net = [
+                    0,1,0;
+                    0,5,0;
+                    0,6,0;
+                    1,2,0;
+                    1,6,0;
+                    1,7,0;
+                    2,3,0;
+                    2,7,0;
+                    2,8,0;
+                    3,4,0;
+                    3,8,0;
+                    4,5,0;
+                    4,8,0;
+                    4,9,0;
+                    5,6,0;
+                    5,9,0;
+                    6,7,0;
+                    6,8,0;
+                    6,9,0;
+                    7,8,0;
+                    8,9,0]+1;
+            elseif strcmpi('ARPA2', backbone_name)==true
+                net = [
+                    0, 1,0;
+                    0, 3,0;
+                    0, 7,0;
+                    1, 2,0;
+                    2, 5,0;
+                    3, 4,0;
+                    4, 5,0;
+                    5, 6,0;
+                    5,14,0;
+                    6, 7,0;
+                    7, 8,0;
+                    7,12,0;
+                    8, 9,0;
+                    9,10,0;
+                    10,11,0;
+                    10,16,0;
+                    11,13,0;
+                    12,13,0;
+                    13,15,0;
+                    14,15,0;
+                    15,18,0;
+                    16,17,0;
+                    17,20,0;
+                    18,19,0;
+                    19,20,0]+1;
+            elseif strcmpi('bellcore', backbone_name)==true
+                net = [
+                    0, 1,0;
+                    0, 8,0;
+                    0, 9,0;
+                    1, 2,0;
+                    1, 7,0;
+                    1, 9,0;
+                    1,10,0;
+                    1,12,0;
+                    2, 3,0;
+                    2, 5,0;
+                    2,12,0;
+                    3, 4,0;
+                    3,12,0;
+                    4, 5,0;
+                    4,14,0;
+                    5, 6,0;
+                    5,11,0;
+                    5,13,0;
+                    5,14,0;
+                    6, 7,0;
+                    6,11,0;
+                    7, 8,0;
+                    7,10,0;
+                    7,11,0;
+                    8, 9,0;
+                    8,10,0;
+                    11,12,0;
+                    11,13,0]+1;
+            elseif strcmpi('nsfnet', backbone_name)==true
+                net = [
+                    0, 1,0;
+                    0, 2,0;
+                    0, 3,0;
+                    1, 2,0;
+                    1, 7,0;
+                    2, 5,0;
+                    3, 4,0;
+                    3, 9,0;
+                    4, 5,0;
+                    4, 6,0;
+                    5,10,0;
+                    5,11,0;
+                    6, 7,0;
+                    7, 8,0;
+                    8,10,0;
+                    8,12,0;
+                    8,13,0;
+                    9,12,0;
+                    9,13,0;
+                    11,12,0;
+                    11,13,0;
+                    ]+1;
+            else
+                error('Invalid backbone name.');
+            end
+            % backbone traffic is proportional to the destination nodes weights
+            % since the important nodes will provide more service to other nodes.
+            
+            %% TODO data center topology
+
+            %% TODO artificial core network topology
+            
+            num_node = max(max(net(:,1:2)));
+            GA = zeros(num_node);
+            for i = 1:size(net,1)
+                GA(net(i,1),net(i,2)) = net(i,3);
+            end
+            GA = GA+GA';
+        end
+    end
+    
+end
+
+
+##### SOURCE END #####
+--></body></html>
