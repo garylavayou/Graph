@@ -2,7 +2,7 @@
 % A path has a node list and associated with parameters, including, bandwidth, latency,
 % identifier, etc.
 %%
-classdef Path < handle
+classdef Path < matlab.mixin.Copyable
     
     properties
         node_list;
@@ -26,7 +26,7 @@ classdef Path < handle
         function this = Path(node_list, bandwidth, latency)
             if nargin >= 1
                 if isa(node_list, 'Path')   % node_list is an instance of Path class.
-                    this.copy(node_list);
+                    this = node_list.copy;
                 elseif isnumeric(node_list)
                     this.node_list = node_list;
                 else
@@ -86,15 +86,6 @@ classdef Path < handle
         end
         
         
-    end
-    
-    methods (Access = private)
-        function copy(this, path)
-            this.node_list = path.node_list;
-            this.bandwidth = path.bandwidth;
-            this.latency = path.latency;
-            this.id = path.id;
-        end
     end
 end
 
