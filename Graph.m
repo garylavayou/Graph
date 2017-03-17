@@ -293,6 +293,9 @@ classdef Graph < handle
         % # If |targets| is a vector, this function return the path from source to
         %     the closet nodes in |targets|.
         %
+        % |dir|: whether the path is from |source| to |targets| (|dir=0|) or from
+        %        |targets| to |source|(|dir=1|).
+        %
         % |path|: a path consists of a sequence of nodes from source to destination.
         %
         % |flag|: 0 - find a shortest path;
@@ -368,7 +371,11 @@ classdef Graph < handle
                 j = j+1;
                 path(j) = node;
             end
-            path = path(j:-1:1);
+            if dir == 0
+                path = path(j:-1:1);
+            else
+                path = path(1:j);
+            end
         end
         
         %% Sort node by distance
