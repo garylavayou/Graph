@@ -2,10 +2,10 @@
 % directed graph
 
 %%
-classdef DirectedGraph < handle    
+classdef DirectedGraph < matlab.mixin.Copyable
     properties
-        Adjacent;       % link weight
-        Capacity;       % link capacity
+        Adjacent;       % matrix link weight
+        Capacity;       % matrix link capacity
         
         Head;
         Tail;
@@ -27,17 +27,19 @@ classdef DirectedGraph < handle
             switch nargin
                 case 1
                     if isa(A, 'DirectedGraph')
-                        this.copy(A);
+                        this = A.copy;
                     elseif isa(A, 'digraph')
                         this.Adjacent = A.adjacency();
-                        [this.Head, this.Tail] = find(this.Adjacent~=0);
-                        this.LinkWeight = zeros(size(this.Head));
                         %% Edges Index Inconsistent
                         % In the digraph, edges are indexed by rows, while matlab matrix
-                        % is indexed by column. Since we use matrix to save the adjacent,
-                        % the edge index of digraph can be directly used.
+                        % is indexed by column. Since in Directed Graph, we use matlab
+                        % matrix to save the adjacent, the edge index of digraph cannot be
+                        % directly used, i.e., 
                         %   this.Head = A.findnode(A.Edges.EndNodes(:,1));
                         %   this.Tail = A.findnode(A.Edges.EndNodes(:,2));
+                        % Instead, we use adjacent matrix column index as follows.
+                        [this.Head, this.Tail] = find(this.Adjacent~=0);
+                        this.LinkWeight = zeros(size(this.Head));
                         this.Capacity = spalloc(A.numnodes,A.numnodes,A.numedges);
                         for e = 1:length(this.Head)
                             s = this.Head(e);
@@ -67,6 +69,7 @@ classdef DirectedGraph < handle
                 end
             end
         end
+        %% Shallow copy
     end
     
     %% Properties
@@ -146,41 +149,52 @@ classdef DirectedGraph < handle
         %
         % |src|: source node of the candidate paths.
         %
-        % |delay|: delay constraint for path.
-        % 
-        % |opt|: 'BandwidthDependent': delay dependence on bandiwdth.
+        % |options|: options for select candidate paths. includinf _delay_ delay
+        % constraint for path, and _delay_opt_ 'BandwidthDependent': delay dependence on
+        % bandiwdth. 
+        %
         % *Output Arguments*
         %
-        % |path_list|: List of candidate paths.
+        % |path_list|: List of candidate paths. If the source and destination are not
+        % connected, or no path meet the delay requirement, |path_list| is returned with
+        % an empty array.
         %
         % |k|: actual number of the selected paths, it may be less than K.
-        %
-        % |delay|: delay limit for path.
-        %
-        % |delay_opt|: link delay option of type LinkDelayOption.
-        function [path_list, k] = CandidatePaths(this, K, src, dest_set, delay, delay_opt)
-            if nargin < 5 || isempty(delay)
-                delay = inf;
+        function [path_list, k] = CandidatePaths(this, K, src, dest_set, options)
+            if nargin < 5 
+                options.delay = inf;
+                options.delay_opt = LinkDelayOption.BandwidthPropotion;
+            else
+                if isempty(options.delay) || options.delay == 0
+                    options.delay = inf;
+                end
+                if isempty(options.delay_opt)
+                    options.delay_opt = LinkDelayOption.BandwidthPropotion;
+                end
             end
-            if nargin < 6 || isempty(delay_opt)
-                delay_opt = LinkDelayOption.BandwidthPropotion;
-            end
+            
             k = 0;
             graph = DirectedGraph(this);
             path_list = cell(K,1);
             while k < K
                 % TODO, the reverse direction
+                % Note: ShortestPath may find the graph is not all connected if k > 1, since
+                % some links may have been removed from the graph.
                 [pn, flag, path_delay] = graph.ShortestPath(src,dest_set); 
                 if flag ~= 0
                     if k==0
-                        error('error: graph does not connected between %d and %d.', src, flag);
+                        warning('graph does not connected between %d and %d.', src, flag);
+                        path_list = [];
+                        return;
                     else
                         break;
                     end
                 else
-                    if path_delay > delay
+                    if path_delay > options.delay
                         if k == 0
-                            error('error: no path meet the delay constraint.');
+                            warning('no path meet the delay constraint.');
+                            path_list = [];
+                            return;
                         else
                             break;
                         end
@@ -191,10 +205,10 @@ classdef DirectedGraph < handle
                     end
                     for j=1:(length(pn)-1)
                         graph.Capacity(pn(j),pn(j+1)) = graph.Capacity(pn(j),pn(j+1)) - bw;
-                        if delay_opt == LinkDelayOption.BandwidthInverse
+                        if options.delay_opt == LinkDelayOption.BandwidthInverse
                             % link weight is inverse propotional to the available bandwidth
                             graph.Adjacent(pn(j),pn(j+1)) = ...
-                                PhysicalNetwork.LinkDelay(delay_opt, graph.Capacity(pn(j),pn(j+1)));
+                                PhysicalNetwork.LinkDelay(options.delay_opt, graph.Capacity(pn(j),pn(j+1)));
                         else
                             % link weight is not changed untill the capacity is depleted.
                             if graph.Capacity(pn(j),pn(j+1)) <= 0
@@ -207,11 +221,15 @@ classdef DirectedGraph < handle
                     % Note: the initialization of bandwidth has no effect.
                 end 
             end
+            path_list(k+1:end) = [];
             path_list = PathList(path_list);
         end
         
         %% Shortest Path
-        % _ShortestPath_ finds a shortest path from "source" to "destination" 
+        % _ShortestPath_ finds a shortest path from "source" to "destination". The matrics
+        % is stored as the graph's adjacent/weight matrix. If two nodes are not connected,
+        % the value in the adjacent matrix is 0/inf (0 can be automatically converted to
+        % inf when calculate the shortest path). 
         %
         %   [path, flag] = ShortestPath(source, targets, dir)
         %
@@ -225,6 +243,11 @@ classdef DirectedGraph < handle
         %     most distant node.
         % # If |targets| is a vector, this function return the path from source to
         %     the closet nodes in |targets|.
+        %
+        % |dir|: whether the path is from |source| to |targets| (|dir=0|) or from
+        %        |targets| to |source|(|dir=1|).
+        %
+        % * Output Arguments*
         %
         % |path|: a path consists of a sequence of nodes from source to destination.
         %
@@ -280,6 +303,7 @@ classdef DirectedGraph < handle
                     % source.
                     flag = index;
                     path = [];
+                    cost = [];
                     return;
                 end
                 b_permanent(index) = 1;
@@ -307,29 +331,20 @@ classdef DirectedGraph < handle
                 j = j+1;
                 path(j) = node;
             end
-            path = path(j:-1:1);
+            if dir == 0
+                path = path(j:-1:1);
+            else
+                path = path(1:j);
+            end
             cost = dist(targets);
         end
         
-        
-    end
-    
-    
-    
-    
-    methods (Access = private)
-        %% Copy
-        function copy(this, graph)
-            this.Adjacent = graph.Adjacent;
-            this.Capacity = graph.Capacity;
-            this.Head = graph.Head;
-            this.Tail = graph.Tail;
-            this.LinkWeight = graph.LinkWeight;
-            this.link_id = graph.link_id;
+        function plot(this)
+            g = digraph(this.Adjacent);
+            g.plot;
         end
-    
     end
-    
+        
     methods(Access=private, Static)
         function l = d(dist)
             dist(dist==0)=inf;
