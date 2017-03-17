@@ -1,7 +1,7 @@
 %% Path List
 % Candidate paths of a flow between two nodes.
 
-classdef PathList < handle
+classdef PathList < matlab.mixin.Copyable
     
     properties
         Source;
@@ -23,7 +23,7 @@ classdef PathList < handle
         %
         function this = PathList(path_list)
             if isa(path_list, 'PathList')
-                this.copy(path_list);
+                this = path_list.copy;
             else
                 lp = length(path_list);
                 this.paths = cell(lp,1);
@@ -56,16 +56,19 @@ classdef PathList < handle
         end
         
         function s = get.Source(this)
-            s = this.paths{1}.Destination;
+            s = this.paths{1}.Source;
         end
         
         function t = get.Destination(this)
-            t = this.paths{1}.Source;
+            t = this.paths{1}.Destination;
         end
     end
     
-    methods (Access = private)
-        function copy(this, path_list)
+    methods (Access = protected)
+        function this = copyElement(path_list)
+            % Make a shallow copy of all properties
+            this = copyElement@matlab.mixin.Copyable(path_list);
+            % Make a deep copy of the DeepCp object
             lp = path_list.Width;
             this.paths = cell(lp,1);
             for i= 1:lp
