@@ -13,6 +13,7 @@ classdef Path < matlab.mixin.Copyable
         bandwidth;
         latency;
         id;
+        local_id; 
         
         Length;
         Source;
