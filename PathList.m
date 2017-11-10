@@ -33,7 +33,24 @@ classdef PathList < matlab.mixin.Copyable
             end
         end
         
-        
+        function delete(this)
+            for i= 1:this.Width
+                delete(this.paths{i});
+            end
+        end
+    end
+    
+    methods (Access = protected)
+        function this = copyElement(path_list)
+            % Make a shallow copy of all properties
+            this = copyElement@matlab.mixin.Copyable(path_list);
+            % Make a deep copy of the DeepCp object
+            lp = path_list.Width;
+            this.paths = cell(lp,1);
+            for i= 1:lp
+                this.paths{i} = path_list.paths{i}.copy;
+            end
+        end
     end
     
     methods
@@ -64,17 +81,5 @@ classdef PathList < matlab.mixin.Copyable
         end
     end
     
-    methods (Access = protected)
-        function this = copyElement(path_list)
-            % Make a shallow copy of all properties
-            this = copyElement@matlab.mixin.Copyable(path_list);
-            % Make a deep copy of the DeepCp object
-            lp = path_list.Width;
-            this.paths = cell(lp,1);
-            for i= 1:lp
-                this.paths{i} = Path(path_list.paths{i});
-            end
-        end
-    end
 end
 
