@@ -286,7 +286,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
         %
         % |k|: actual number of the selected paths, it may be less than K.
         function [path_list, k] = CandidatePaths(this, K, src, dest_set, options)
-            global InfoLevel;
+            global DEBUG;
             if nargin < 5
                 options.DelayConstraint = inf;
                 options.DelayModel = LinkDelayOption.BandwidthPropotion;
@@ -341,7 +341,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
                 end
                 if flag ~= 0
                     if k==0
-                        if InfoLevel.UserModel >= DisplayLevel.Notify
+                        if ~isempty(DEBUG) && DEBUG
                             warning('graph does not connected between %d and %d.', ...
                                 src, dest_set(1));
                         end
