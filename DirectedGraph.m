@@ -1,10 +1,13 @@
 %% Directed Graph
 % directed graph
+%% TODO
+% Refactor the adjacent matrix: rows as tails and columns as head of edges, so
+% as to keep consistent with graph/digraph class.
 
 %%
 classdef DirectedGraph < matlab.mixin.Copyable
     properties (SetAccess=protected)
-        Adjacent;       % matrix link weight
+        Adjacent;       % matrix link weight (TODO: differentiate from Delay)
         Capacity;       % matrix link capacity
         
         Head;
@@ -20,131 +23,144 @@ classdef DirectedGraph < matlab.mixin.Copyable
         mat_cpath;       % for APSP
     end
     properties(Dependent)
+			EdgeTable;
         NumberNodes;
         NumberEdges;
     end
     
-    %% Constructor
     methods
-        function this = DirectedGraph(A, C)
-            switch nargin
-                case 1
-                    if isa(A, 'DirectedGraph')
-                        this = A.copy;
-                    elseif isa(A, 'digraph')
-                        this.Adjacent = A.adjacency();
-                        %% Edges Index Inconsistent
-                        % In the |digraph|, edges are indexed by rows, while matlab matrix
-                        % is indexed by column. Since in Directed Graph, we use matlab
-                        % matrix to save the adjacent. The edge index of digraph cannot be
-                        % directly used, i.e.,
-                        %   this.Head = A.findnode(A.Edges.EndNodes(:,1));
-                        %   this.Tail = A.findnode(A.Edges.EndNodes(:,2));
-                        % Instead, we use adjacent matrix column index as follows.
-                        [this.Head, this.Tail] = find(this.Adjacent~=0);
-                        this.LinkWeight = zeros(size(this.Head));
-                        for e = 1:length(this.Head)
-                            s = this.Head(e);
-                            t = this.Tail(e);
-                            eid = A.findedge(s,t);
-                            this.Adjacent(s,t) = A.Edges.Weight(eid);
-                            this.LinkWeight(e) = A.Edges.Weight(eid);
-                        end
-                        if contains('Capacity', A.Edges.Properties.VariableNames)
-                            this.Capacity = spalloc(A.numnodes,A.numnodes,A.numedges);
-                            for e = 1:length(this.Head)
-                                s = this.Head(e);
-                                t = this.Tail(e);
-                                eid = A.findedge(s,t);
-                                this.Capacity(s,t) = A.Edges.Capacity(eid);
-                            end
-                        end
-                    elseif isnumeric(A)
-                        this.Adjacent = A;
-                        [this.Head, this.Tail, this.LinkWeight] = find(this.Adjacent);
-                        %                         this.Capacity = double(this.Adjacent~=0);
-                    end
-                case 2
-                    this.Adjacent = A;
-                    [this.Head, this.Tail, this.LinkWeight] = find(this.Adjacent);
-                    this.Capacity = C;
-                otherwise
-            end
-            
-            if ~isempty(this.Head) && isempty(this.link_id)
-                this.link_id = spalloc(this.NumberNodes, this.NumberNodes, this.NumberEdges);
-                for e=1:length(this.Head)
-                    % link e from head(e) to tail(e)
-                    this.link_id(this.Head(e),this.Tail(e))=e;
-                end
-            end
-        end
-        %% Shallow copy
-    
-        %%
-        % After the update, edge index may not follow the column-indexing scheme, since
-        % the arguments |new_head|, |new_tail|, might not be organized with
-        % column-indexing (cannot do mapping from |Adjacent| to |head| and |tail|,
-        % however, the recorded |link_id| solved this mapping problem).  
-        %
-        %   this = Update(this, head, tail, props)
-        function this = Update(this, head, tail, props)
-            if isempty(head) || isempty(tail)
-                return;
-            end
-            prev_num_edges = this.NumberEdges;
-            this.Head = [this.Head; head];
-            this.Tail = [this.Tail; tail];
-            [~, b] = unique([this.Head this.Tail], 'rows');
-            if length(b) < length(this.Head)
-                error('error: duplicate edges.');
-            end
-            this.LinkWeight = [this.LinkWeight; props.Weight];
-            num_nodes = max([this.Head; this.Tail]);
-            if size(this.Adjacent) < num_nodes  % expansion matrix
-                this.Adjacent(num_nodes, num_nodes) = 0;
-                this.link_id(num_nodes, num_nodes) = 0;
-            end
-            for i=1:length(head)
-                this.link_id(head(i),tail(i))= i + prev_num_edges;
-                this.Adjacent(head(i),tail(i)) = props.Weight(i);
-            end            
-            
-            if isfield(props, 'Capacity')
-                if size(this.Adjacent) < num_nodes  % expansion matrix
-                    this.Capacity(num_nodes, num_nodes) = 0;
-                end
-                for i = 1:length(head)
-                    this.Capacity(head(i),tail(i)) = props.Capacity(i);
-                end
-            elseif ~isempty(this.Capacity)
-                error('error: property <Capacity> should be specified.')
-            end
-        end
-        
-        function this = Replace(this, head, tail, props)
-            this.Head = head;
-            this.Tail = tail;
-            this.LinkWeight = props.Weight;
-            num_nodes = max([this.Head;this.Tail]);
-            num_edges = length(head);
-            this.Adjacent = spalloc(num_nodes, num_nodes, num_edges);
-            this.link_id = spalloc(num_nodes, num_nodes, num_edges);
-            for eid=1:num_edges
-                this.link_id(head(eid),tail(eid))=eid;
-                this.Adjacent(head(eid),tail(eid)) = props.Weight(eid);
-            end
-            if isfield(props, 'Capacity')
-                this.Capacity = spalloc(num_nodes, num_nodes, num_edges);
-                for eid = 1:num_edges
-                    this.Capacity(head(eid),tail(eid)) = props.Capacity(eid);
-                end
-            elseif ~isempty(this.Capacity)
-                error('error: property <Capacity> should be specified.')
-            end
-        end
-        
-        function [rm_nodes, rm_links] = Remove(this, b_rm_nodes, b_rm_links)
+			%% Constructor
+			function this = DirectedGraph(A, C)
+				switch nargin
+					case 1
+						if isa(A, 'DirectedGraph')
+							this = A.copy;
+						elseif isa(A, 'digraph')
+							this.Adjacent = A.adjacency();
+							%% Edges Index Inconsistent
+							% In the |digraph|, edges are indexed by rows, while matlab matrix
+							% is indexed by column. Since in Directed Graph, we use matlab
+							% matrix to save the adjacent. The edge index of digraph cannot be
+							% directly used, i.e.,
+							%   this.Head = A.findnode(A.Edges.EndNodes(:,1));
+							%   this.Tail = A.findnode(A.Edges.EndNodes(:,2));
+							% Instead, we use adjacent matrix column index as follows.
+							[this.Head, this.Tail] = find(this.Adjacent~=0);
+							this.LinkWeight = zeros(size(this.Head));
+							for e = 1:length(this.Head)
+								s = this.Head(e);
+								t = this.Tail(e);
+								eid = A.findedge(s,t);
+								this.Adjacent(s,t) = A.Edges.Weight(eid);
+								this.LinkWeight(e) = A.Edges.Weight(eid);
+							end
+							if contains('Capacity', A.Edges.Properties.VariableNames)
+								this.Capacity = spalloc(A.numnodes,A.numnodes,A.numedges);
+								for e = 1:length(this.Head)
+									s = this.Head(e);
+									t = this.Tail(e);
+									eid = A.findedge(s,t);
+									this.Capacity(s,t) = A.Edges.Capacity(eid);
+								end
+							end
+						elseif isnumeric(A)
+							this.Adjacent = A;
+							[this.Head, this.Tail, this.LinkWeight] = find(this.Adjacent);
+							%                         this.Capacity = double(this.Adjacent~=0);
+						end
+					case 2
+						this.Adjacent = A;
+						[this.Head, this.Tail, this.LinkWeight] = find(this.Adjacent);
+						this.Capacity = C;
+					otherwise
+				end
+				
+				if ~isempty(this.Head) && isempty(this.link_id)
+					this.link_id = spalloc(this.NumberNodes, this.NumberNodes, this.NumberEdges);
+					for e=1:length(this.Head)
+						% link e from head(e) to tail(e)
+						this.link_id(this.Head(e),this.Tail(e))=e;
+					end
+				end
+			end
+			%% Shallow copy only
+			
+			%% Add new edges to the graph
+			% TODO: rename.
+			%
+			% After adding new edges (new_head,new_tools), the colum-indexing
+			% rule of edges might be broken, since the new edges might precede
+			% the old edges by the column-indexing rules in the adjacency matrix.
+			% For convienence, we keep the indices of old edges not changed
+			% (which have been recorded as |link_id| in the object), while
+			% appending new edges with new indices.  
+			%
+			%   this = Update(this, head, tail, props)
+			function this = Update(this, head, tail, props)
+				if isempty(head) || isempty(tail)
+					return;
+				end
+				prev_num_edges = this.NumberEdges;
+				this.Head = [this.Head; head];
+				this.Tail = [this.Tail; tail];
+				[~, b] = unique([this.Head this.Tail], 'rows');
+				if length(b) < length(this.Head)
+					error('error: duplicate edges.');
+				end
+				this.LinkWeight = [this.LinkWeight; props.Weight];
+				num_nodes = max([this.Head; this.Tail]);
+				if size(this.Adjacent) < num_nodes  % expansion matrix
+					this.Adjacent(num_nodes, num_nodes) = 0;
+					this.link_id(num_nodes, num_nodes) = 0;
+				end
+				idx = prev_num_edges + 1;
+				for i=1:length(head)
+					if this.link_id(head(i),tail(i)) == 0 
+						this.link_id(head(i),tail(i))= idx;
+						idx = idx + 1;
+					else
+						warning('edge (%d,%d) exists, update properties.', head(i). tail(i));
+					end
+					this.Adjacent(head(i),tail(i)) = props.Weight(i);
+				end
+				
+				if isfield(props, 'Capacity')
+					if size(this.Adjacent) < num_nodes  % expansion matrix
+						this.Capacity(num_nodes, num_nodes) = 0;
+					end
+					for i = 1:length(head)
+						this.Capacity(head(i),tail(i)) = props.Capacity(i);
+					end
+				elseif ~isempty(this.Capacity)
+					error('error: property <Capacity> should be specified.')
+				end
+			end
+			
+			function this = Replace(this, head, tail, props)
+				this.Head = head;
+				this.Tail = tail;
+				this.LinkWeight = props.Weight;
+				num_nodes = max([this.Head;this.Tail]);
+				num_edges = length(head);
+				this.Adjacent = spalloc(num_nodes, num_nodes, num_edges);
+				this.link_id = spalloc(num_nodes, num_nodes, num_edges);
+				for eid=1:num_edges
+					this.link_id(head(eid),tail(eid))=eid;
+					this.Adjacent(head(eid),tail(eid)) = props.Weight(eid);
+				end
+				if isfield(props, 'Capacity')
+					this.Capacity = spalloc(num_nodes, num_nodes, num_edges);
+					for eid = 1:num_edges
+						this.Capacity(head(eid),tail(eid)) = props.Capacity(eid);
+					end
+				elseif ~isempty(this.Capacity)
+					error('error: property <Capacity> should be specified.')
+				end
+			end
+			
+			%%
+			% Remove links and reallocate link index.
+			function [rm_nodes, rm_links] = Remove(this, b_rm_nodes, b_rm_links)
             if ~islogical(b_rm_links)
                 temp = false(this.NumberLinks,1);
                 temp(b_rm_links) = true;
@@ -201,8 +217,15 @@ classdef DirectedGraph < matlab.mixin.Copyable
         
         function m = get.NumberEdges(this)
             m = length(this.Head);
-        end
+				end
+				
+				function tbl = get.EdgeTable(this)
+					[head, tail, idx] = find(this.link_id');
+					tbl = table(idx, [tail,head], 'VariableName', {'Index', 'EndNodes'});
+				end
         
+				%% Set Weight
+				% TODO: rename as SetWeight.
         function SetAdjacent(this, i, j, w)
             % check data vailidity.
             if this.Adjacent(i,j) == 0 
@@ -215,6 +238,18 @@ classdef DirectedGraph < matlab.mixin.Copyable
         %         function w = GetAdjacent(this, i, j)
         %             w = this.Adjacent(i,j);
         %         end
+				%% Incident Matrix
+				% flow-out is negative, flow-in is positive
+				function sp_mat = GetIncidentMatrix(this, bFull)
+					L = this.NumberEdges;
+					n = [this.Head; this.Tail];
+					e = [(1:L)'; (1:L)'];
+					b = [-ones(L,1); ones(L,1)];   
+					sp_mat = sparse(n, e, b);
+					if nargin >= 2 && bFull
+						sp_mat = full(sp_mat);
+					end
+				end
     end
     
     methods
@@ -223,9 +258,12 @@ classdef DirectedGraph < matlab.mixin.Copyable
         % get the link index by the specified link head and tail. |src| and |dest| are
         % scalar or vector, represent the link heads and tails.
         %
-        % [src dest] = IndexEdge(this, id)
-        % [src dest] = IndexEdge(this)
-        % get the link head and tail by the speified link |id|, |id| is a vector.
+				% Example:
+        %		[src dest] = IndexEdge(this)
+        %		[src dest] = IndexEdge(this, id)
+				%							   Get the link head and tail by the speified link |id|,
+				%							   |id| is a vector. 
+				%		idx = IndexEdge(this, s, t)
         function [arg1_out,arg2_out] = IndexEdge(this, arg1_in, arg2_in)
             if nargin == 1
                 arg1_out = this.Head;
@@ -272,11 +310,12 @@ classdef DirectedGraph < matlab.mixin.Copyable
         %
         % |src|: source node of the candidate paths.
         %
-        % |options|: options for select candidate paths, including (1) _delay_: delay
-        % constraint for path, (2) _delay_opt_: if this option is set as
-        % |'BandwidthDependent'|, link delay depends on residual bandiwdth, (3) _mid_set_:
-        % middle nodes, if specified, one of which must be traversed by the candidate
-        % path; otherwise no such a constraint.
+        % |options|: options for select candidate paths, including:
+				%		(1) _delay_: delay constraint for path, 
+				%		(2) _delay_opt_: if this option is set as |'BandwidthDependent'|,
+				%				link delay depends on residual bandiwdth, 
+				%		(3) _mid_set_: the middle nodes, one of which must be traversed by
+				%				the candidate path. 
         %
         % *Output Arguments*
         %
@@ -624,10 +663,11 @@ classdef DirectedGraph < matlab.mixin.Copyable
             W = this.Adjacent;
             W(W==inf) = 0;
             g = digraph(W);
+						[~,~,edge_lables]= find((this.link_id)');
             if nargin >= 2
-                g.plot(line_spec);
+                g.plot(line_spec, 'EdgeLabel', edge_lables);
             else
-                g.plot;
+                g.plot('EdgeLabel', edge_lables);
             end
         end
     end
