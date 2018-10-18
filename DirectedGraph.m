@@ -36,26 +36,37 @@ classdef DirectedGraph < matlab.mixin.Copyable
 					if isa(A, 'DirectedGraph')
 						this = A.copy;
 					elseif isa(A, 'digraph')
-						construtByEdgeNodeTable(A.Edges, A.Nodes);
+						constructByEdgeNodeTable(A.Edges, A.Nodes);
 					elseif isnumeric(A)
-						this.Adjacent = A;
-						[this.Head, this.Tail, this.LinkWeight] = find(this.Adjacent);
-					elseif isstruct(A) % A includes an EdgeTable (and a NodeTable).
-						edge_table = A.Edges;
-						if isfield(A, 'Nodes')
-							node_table = A.Nodes;
+						constructByAdjacent(A, []);
+					elseif isstruct(A) 
+						if isfield(A, 'Edges') && istable(A.Edges)
+							% A includes an EdgeTable (and a NodeTable).
+							edge_table = A.Edges;
+							if isfield(A, 'Nodes')
+								node_table = A.Nodes;
+							else
+								node_table = [];
+							end
+							constructByEdgeNodeTable(edge_table, node_table);
+						elseif isfield(A, 'Adjacent')
+							% A includes an adjacency matrix (and the corresponding capacity matrix).
+							A = A.Adjacent;
+							if isfield(A, 'Capacity')
+								C = A.Capacity;
+							else
+								C = [];
+							end
+							constructByAdjacent(A, C);
 						else
-							node_table = [];
+							error('error:[%s] unknown data structure.', calledby);
 						end
-						construtByEdgeNodeTable(edge_table, node_table);
 					end
 				case 2
 					if istable(A)
-						construtByEdgeNodeTable(A, C);
+						constructByEdgeNodeTable(A, C);
 					else
-						this.Adjacent = A;
-						[this.Head, this.Tail, this.LinkWeight] = find(this.Adjacent);
-						this.Capacity = C;
+						constructByAdjacent(A, C);
 					end
 				otherwise
 			end
@@ -68,7 +79,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 				end
 			end
 			
-			function construtByEdgeNodeTable(edge_table, node_table)
+			function constructByEdgeNodeTable(edge_table, node_table)
 				this.Head = edge_table.EndNodes(:,1);
 				this.Tail = edge_table.EndNodes(:,2);
 				num_links = height(edge_table);
@@ -95,6 +106,14 @@ classdef DirectedGraph < matlab.mixin.Copyable
 						t = this.Tail(e);
 						this.Capacity(s,t) = edge_table.Capacity(e);
 					end
+				end
+			end
+			
+			function constructByAdjacent(Adj, Cap)
+				this.Adjacent = Adj;
+				[this.Head, this.Tail, this.LinkWeight] = find(this.Adjacent);
+				if ~isempty(Cap)
+					this.Capacity = Cap;
 				end
 			end
 		end
