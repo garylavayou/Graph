@@ -23,7 +23,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 		mat_cpath;       % for APSP
 	end
 	properties(Dependent)
-		EdgeTable;
+		% EdgeTable;
 		NumberNodes;
 		NumberEdges;
 	end
@@ -51,13 +51,13 @@ classdef DirectedGraph < matlab.mixin.Copyable
 							constructByEdgeNodeTable(edge_table, node_table);
 						elseif isfield(A, 'Adjacent')
 							% A includes an adjacency matrix (and the corresponding capacity matrix).
-							A = A.Adjacent;
+							Adj = A.Adjacent;
 							if isfield(A, 'Capacity')
-								C = A.Capacity;
+								Cap = A.Capacity;
 							else
-								C = [];
+								Cap = [];
 							end
-							constructByAdjacent(A, C);
+							constructByAdjacent(Adj, Cap);
 						else
 							error('error:[%s] unknown data structure.', calledby);
 						end
@@ -253,10 +253,10 @@ classdef DirectedGraph < matlab.mixin.Copyable
 			m = length(this.Head);
 		end
 		
-		function tbl = get.EdgeTable(this)
-			[head, tail, idx] = find(this.link_id');
-			tbl = table(idx, [tail,head], 'VariableName', {'Index', 'EndNodes'});
-		end
+		% 		function tbl = get.EdgeTable(this)
+		% 			[head, tail, idx] = find(this.link_id');
+		% 			tbl = table(idx, [tail,head], 'VariableName', {'Index', 'EndNodes'});
+		% 		end
 		
 		%% Set Weight
 		% TODO: rename as SetWeight.
@@ -360,16 +360,17 @@ classdef DirectedGraph < matlab.mixin.Copyable
 		% |k|: actual number of the selected paths, it may be less than K.
 		function [path_list, k] = CandidatePaths(this, K, src, dest_set, options)
 			global DEBUG;
-			if nargin < 5
-				options.DelayConstraint = inf;
-				options.DelayModel = LinkDelayOption.BandwidthPropotion;
+			defaultopts = struct(...
+				'DelayConstraint', inf,...
+				'DelayModel', LinkDelayOption.BandwidthPropotion,...
+				'MiddleNodes', []);
+			if nargin <= 5
+				options = defaultopts;
 			else
-				if isempty(options.DelayConstraint) || options.DelayConstraint == 0
-					options.DelayConstraint = inf;
-				end
-				if isempty(options.DelayModel)
-					options.DelayModel = LinkDelayOption.BandwidthPropotion;
-				end
+				options = structupdate(defaultopts, options);
+			end
+			if options.DelayConstraint == 0
+				options.DelayConstraint = inf;
 			end
 			
 			k = 0;
@@ -405,8 +406,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 				% Note: ShortestPath may find the graph is not all connected if k > 1,
 				% since some links may have been removed from the graph.
 				[pn, flag, path_delay] = graph.SingleSourceShortestPaths(src,dest_set);
-				if flag == 0 && ...
-						isfield(options, 'MiddleNodes') && ~isempty(options.MiddleNodes)
+				if flag == 0 && ~isempty(options.MiddleNodes)
 					if isempty(intersect(options.MiddleNodes, pn))
 						[pn, flag, path_delay] = ...
 							graph.ForcedShortestPath(src, dest_set, options.MiddleNodes);
