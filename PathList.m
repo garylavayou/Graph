@@ -205,7 +205,7 @@ classdef PathList < matlab.mixin.Copyable
 					p = this.path_list.Add(path_list);
 				elseif iscell(path_list)
 					for i = 1:length(path_list)
-						if i> 1 && ~PathList.assert_common_path(path_list{i}, path_list{i-1})
+						if i> 1 && ~PathList.assert_common_paths(path_list{i}, path_list{i-1})
 							error('[%s] error: Paths have different source/destination.', calledby(0));
 						end
 						if isnumeric(path_list{i})

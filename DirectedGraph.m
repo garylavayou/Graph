@@ -415,10 +415,10 @@ classdef DirectedGraph < matlab.mixin.Copyable
 				if flag ~= 0
 					if k==0
 						if ~isempty(DEBUG) && DEBUG
-							warning('graph does not connected between %d and %d.', ...
-								src, dest_set(1));
+							warning('[%s] graph does not connected between %d and %d.', ...
+								calledby, src, dest_set(1));
 						end
-						path_list = [];
+						path_list = PathList();
 						return;
 					else
 						break;
@@ -427,7 +427,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 					if path_delay > options.DelayConstraint
 						if k == 0
 							warning('no path meet the delay constraint.');
-							path_list = [];
+							path_list = PathList();
 							return;
 						else
 							break;
