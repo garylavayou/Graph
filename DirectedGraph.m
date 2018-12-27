@@ -1,8 +1,5 @@
 %% Directed Graph
 % directed graph
-%% TODO
-% Refactor the adjacent matrix: rows as tails and columns as head of edges, so
-% as to keep consistent with graph/digraph class.
 
 %%
 classdef DirectedGraph < matlab.mixin.Copyable
@@ -10,7 +7,9 @@ classdef DirectedGraph < matlab.mixin.Copyable
 		Adjacent;       % matrix link weight (TODO: differentiate from Delay)
 		Capacity;       % matrix link capacity
 		
-		Head;
+		%% Indexing Keys
+		% indexing links by [head, tail] pairs.
+		Head;		
 		Tail;
 		LinkWeight;
 		%         LinkCapacity;
@@ -72,11 +71,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 			end
 			
 			if ~isempty(this.Head) && isempty(this.link_id)
-				this.link_id = spalloc(this.NumberNodes, this.NumberNodes, this.NumberEdges);
-				for eid=1:length(this.Head)
-					% link e from head(e) to tail(e)
-					this.link_id(this.Head(eid),this.Tail(eid))=eid;
-				end
+				this.link_id = sparse(this.Head, this.Tail, 1:numel(this.Head));
 			end
 			
 			function constructByEdgeNodeTable(edge_table, node_table)
@@ -85,8 +80,16 @@ classdef DirectedGraph < matlab.mixin.Copyable
 				num_links = height(edge_table);
 				if contains('Weight', edge_table.Properties.VariableNames)
 					this.LinkWeight = edge_table.Weight;
+				elseif ~isempty(edge_table.Properties.UserData) && ...
+						isstruct(edge_table.Properties.UserData) && ...
+						isfield(edge_table.Properties.UserData, 'WeightField')
+					var_name = edge_table.Properties.UserData.WeightField;
+					this.LinkWeight = edge_table{:, var_name};
+				elseif ~isempty(edge_table) && isscalar(edge_table{1,2}) && isnumeric(edge_table{1,2})
+					this.LinkWeight = edge_table{:, 2};
+					warning('%s as Weight for graph.', edge_table.Properties.VariableNames{2});
 				else
-					this.LinkWeight = ones(num_links,1);
+					this.LinkWeight = ones(num_links, 1);
 				end
 				if isempty(node_table)
 					num_nodes = max(max(edge_table.EndNodes));
@@ -119,21 +122,39 @@ classdef DirectedGraph < matlab.mixin.Copyable
 		end
 		%% Shallow copy only
 		
-		%% Add new edges to the graph
-		% TODO: rename.
-		%
-		% After adding new edges (new_head,new_tools), the colum-indexing
-		% rule of edges might be broken, since the new edges might precede
-		% the old edges by the column-indexing rules in the adjacency matrix.
-		% For convienence, we keep the indices of old edges not changed
-		% (which have been recorded as |link_id| in the object), while
-		% appending new edges with new indices.
+		%% Add new edges to the graph [TODO] Rename
 		%
 		%   this = Update(this, head, tail, props)
+		%
+		% IMPORTANT: link indexing is based on the storage order of [head, tail] pairs of
+		% links. 
+		%		The initial storage of [head, tail] pair is based on the colum-indexing of the
+		%		adjacency matrix of the graph. However, after adding new edges
+		%		(new_head,new_tails), the column-indexing rule might be violated, since the new
+		%		edges might precede the old edges according to the column-indexing rules. Hence
+		%		for convienence, we keep the indices of old edges not changed (which have been
+		%		recorded as |link_id| in the object), while appending new edges with new indices
+		%		and assigning their corresponding indices.
+		%
+		% See also <Remove>.
 		function this = Update(this, head, tail, props)
 			if isempty(head) || isempty(tail)
 				return;
 			end
+			%% [TODO]: add the capability to add [head, tail] that is nonpositive indexed.
+			ne = min([head; tail]);
+			if ne <= 0
+				offset = 1 - ne;
+				this.Head = this.Head + offset;
+				this.Tail = this.Tail + offset;
+				num_nodes = size(this.Adjacent,1);
+				this.Adjacent(offset+(1:num_nodes), offset+(1:num_nodes)) = this.Adjacent;
+				this.link_id(offset+(1:num_nodes), offset+(1:num_nodes)) = this.Adjacent;
+				this.Capacity(offset+(1:num_nodes), offset+(1:num_nodes)) = this.Capacity;
+				head = head + offset;
+				tail = tail + offset;
+			end
+			
 			prev_num_edges = this.NumberEdges;
 			this.Head = [this.Head; head];
 			this.Tail = [this.Tail; tail];
@@ -192,8 +213,9 @@ classdef DirectedGraph < matlab.mixin.Copyable
 			end
 		end
 		
-		%%
-		% Remove links and reallocate link index.
+		%% Remove nodes and links
+		% Remove links and reallocate link index. The reallocation of link indices is based on
+		% the storage order of [head, tail] pairs.
 		function [rm_nodes, rm_links] = Remove(this, b_rm_nodes, b_rm_links)
 			if ~islogical(b_rm_links)
 				temp = false(this.NumberLinks,1);
@@ -226,9 +248,20 @@ classdef DirectedGraph < matlab.mixin.Copyable
 				this.Adjacent(h,t) = 0;
 			end
 			b_rm_nodes = sum(this.Adjacent,1)==0 & (sum(this.Adjacent,2)==0)';
-			this.Adjacent(b_rm_nodes, b_rm_nodes) = [];
+			this.Adjacent(b_rm_nodes, b_rm_nodes) = []; 
 			this.Head(b_rm_links) = [];
 			this.Tail(b_rm_links) = [];
+			count_off_head = zeros(length(this.Head),1);
+			count_off_tail = zeros(length(this.Tail),1);
+			for i = find(b_rm_nodes)
+				idx = this.Head>i;
+				count_off_head(idx) = count_off_head(idx) + 1;
+				idx = this.Tail>i;
+				count_off_tail(idx) = count_off_tail(idx) + 1;
+			end
+			this.Head = this.Head - count_off_head;
+			this.Tail = this.Tail - count_off_tail;
+			% re-allocate link id according to the storage order of [head, tail] pairs.
 			this.link_id = spalloc(this.NumberNodes, this.NumberNodes, this.NumberEdges);
 			for eid=1:this.NumberEdges
 				this.link_id(this.Head(eid),this.Tail(eid))=eid;
@@ -360,17 +393,17 @@ classdef DirectedGraph < matlab.mixin.Copyable
 		% |k|: actual number of the selected paths, it may be less than K.
 		function [path_list, k] = CandidatePaths(this, K, src, dest_set, options)
 			global DEBUG;
-			defaultopts = struct(...
-				'DelayConstraint', inf,...
+			defaultopts = Dictionary(...
+				'CostBound', inf,...
 				'DelayModel', LinkDelayOption.BandwidthPropotion,...
 				'MiddleNodes', []);
-			if nargin <= 5
+			if nargin <= 4
 				options = defaultopts;
 			else
 				options = structupdate(defaultopts, options);
 			end
-			if options.DelayConstraint == 0
-				options.DelayConstraint = inf;
+			if options.CostBound == 0
+				options.CostBound = inf;
 			end
 			
 			k = 0;
@@ -405,10 +438,10 @@ classdef DirectedGraph < matlab.mixin.Copyable
 				% TODO, the reverse direction
 				% Note: ShortestPath may find the graph is not all connected if k > 1,
 				% since some links may have been removed from the graph.
-				[pn, flag, path_delay] = graph.SingleSourceShortestPaths(src,dest_set);
+				[pn, flag, path_cost] = graph.SingleSourceShortestPaths(src,dest_set);
 				if flag == 0 && ~isempty(options.MiddleNodes)
 					if isempty(intersect(options.MiddleNodes, pn))
-						[pn, flag, path_delay] = ...
+						[pn, flag, path_cost] = ...
 							graph.ForcedShortestPath(src, dest_set, options.MiddleNodes);
 					end
 				end
@@ -424,7 +457,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 						break;
 					end
 				else
-					if path_delay > options.DelayConstraint
+					if path_cost > options.CostBound  % the meanging of cost depends on the application (e.g. delay)
 						if k == 0
 							warning('no path meet the delay constraint.');
 							path_list = PathList();
@@ -451,7 +484,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 						end
 					end
 					k = k + 1;
-					path_list{k} = Path(pn, bw, path_delay);
+					path_list{k} = Path(pn, bw, path_cost);
 					% Note: the initialization of bandwidth has no effect.
 				end
 			end
@@ -693,16 +726,25 @@ classdef DirectedGraph < matlab.mixin.Copyable
 			%             end
 		end
 		
-		function plot(this, line_spec)
+		function plot(this, varargin)
 			W = this.Adjacent;
 			W(W==inf) = 0;
 			g = digraph(W);
-			[~,~,edge_lables]= find((this.link_id)');
-			if nargin >= 2
-				g.plot(line_spec, 'EdgeLabel', edge_lables);
-			else
-				g.plot('EdgeLabel', edge_lables);
+			args = {};
+			for i = 1:2:(numel(varargin)-1)
+				switch varargin{i}
+					case 'EdgeLabel'
+						edge_lables = varargin{i+1};
+						args = [args, {'EdgeLabel', edge_lables}]; %#ok<AGROW>
+					case 'Position'
+						args = [args, {'XData', varargin{i+1}(:,1), 'YData', varargin{i+1}(:,2)}]; %#ok<AGROW>
+				end
 			end
+			if ~exist('edge_lables', 'var')
+				[~,~,edge_lables]= find((this.link_id)');
+				args = [args, {'EdgeLabel', edge_lables}];
+			end
+			g.plot(args{:});
 		end
 	end
 	
@@ -776,7 +818,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 			
 			for i = 1:N-1
 				temp_dist = dist;
-				temp_dist(b_permanent==1) = inf;
+				temp_dist(b_permanent==1) = inf; 
 				[min_dist,index] = min(temp_dist);
 				if min_dist == inf
 					% the temporary nodes include the targets are not reachable from the
@@ -790,7 +832,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 					flag = index;
 					break;
 				end
-				for k = find(W(index,:)<Inf)
+				for k = find(W(index,:)<Inf)   % find(W(index,:)<Inf & W(index,:)>0)
 					new_dist = dist(index)+W(index,k);
 					if dist(k) > new_dist
 						dist(k) = new_dist;

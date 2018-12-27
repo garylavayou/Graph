@@ -52,7 +52,16 @@ classdef PathList < matlab.mixin.Copyable
 				end
         
         function l = get.Latency(this)
-					l = max(this.path_list{'latency'});
+					l = [];
+					for i = 1:this.Width
+						if ~isempty(this.path_list{i}.latency)
+							if isempty(l)
+								l = this.path_list{i}.latency;
+							else
+								l = max(l, this.path_list{i}.latency);
+							end
+						end
+					end
         end
         
         function s = get.Source(this)
@@ -133,7 +142,18 @@ classdef PathList < matlab.mixin.Copyable
 							else
 								assertpermission('Path', s(2).subs, 'get');
 							end
-							varargout = {builtin('subsref', list.path_list, s)};
+							try
+									varargout = {builtin('subsref', list.path_list, s)};
+							catch me
+								if isequal(me.identifier, 'MATLAB:unassignedOutputs')
+									varargout = {};
+									builtin('subsref', list.path_list, s);
+								elseif isequal(me.identifier, 'MATLAB:maxlhs')
+									builtin('subsref', list.path_list, s); % the statement not executed
+								else
+									rethrow(me);
+								end
+							end
 						otherwise
 							error('error: operation %s is not supported.', s(1).type);
 					end

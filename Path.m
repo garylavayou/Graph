@@ -15,7 +15,7 @@ classdef Path < matlab.mixin.Copyable
         id;
         local_id; 
         
-        Length;
+        Length;			% Number of nodes on this path
         Source;
         Destination;
         TailLink;
@@ -44,7 +44,7 @@ classdef Path < matlab.mixin.Copyable
         
 
         function l = get.Length(this)
-            l = length(this.node_list);
+            l = length(this.node_list) - 1;
         end
         function h = get.Source(this)
             h = this.node_list(1);
