@@ -20,11 +20,13 @@ classdef Path < matlab.mixin.Copyable
         Destination;
         TailLink;
         HeadLink;
+        
+        userdata;
     end
     
     methods
 
-        function this = Path(node_list, bandwidth, latency)
+        function this = Path(node_list, bandwidth, latency, data)
             if nargin >= 1
                 if isa(node_list, 'Path')   % node_list is an instance of Path class.
                     this = node_list.copy;
@@ -39,6 +41,9 @@ classdef Path < matlab.mixin.Copyable
             end
             if nargin >= 3 && ~isempty(latency)
                 this.latency = latency;
+            end
+            if nargin >= 4 &&  ~isempty(data)
+              this.userdata = data;
             end
         end
         

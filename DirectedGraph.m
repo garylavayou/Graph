@@ -88,6 +88,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 				elseif ~isempty(edge_table) && isscalar(edge_table{1,2}) && isnumeric(edge_table{1,2})
 					this.LinkWeight = edge_table{:, 2};
 					warning('%s as Weight for graph.', edge_table.Properties.VariableNames{2});
+					assert(isempty(find(this.LinkWeight<=0,1)), 'error: non-positive link weight.');
 				else
 					this.LinkWeight = ones(num_links, 1);
 				end
@@ -162,6 +163,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 			if length(b) < length(this.Head)
 				error('error: duplicate edges.');
 			end
+			assert(isempty(find(props.Weight<=0,1)), 'error: non-positive link weigth.');
 			this.LinkWeight = [this.LinkWeight; props.Weight];
 			num_nodes = max([this.Head; this.Tail]);
 			if size(this.Adjacent) < num_nodes  % expansion matrix
@@ -400,7 +402,11 @@ classdef DirectedGraph < matlab.mixin.Copyable
 			if nargin <= 4
 				options = defaultopts;
 			else
-				options = structupdate(defaultopts, options);
+				if DEBUG
+					options = structupdate(defaultopts, options);
+				else
+					options = structupdate(defaultopts, options, 'silent');
+				end
 			end
 			if options.CostBound == 0
 				options.CostBound = inf;
@@ -447,7 +453,7 @@ classdef DirectedGraph < matlab.mixin.Copyable
 				end
 				if flag ~= 0
 					if k==0
-						if ~isempty(DEBUG) && DEBUG
+						if DEBUG
 							warning('[%s] graph does not connected between %d and %d.', ...
 								calledby, src, dest_set(1));
 						end
